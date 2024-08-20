@@ -239,10 +239,10 @@ MonoBehaviour:
   levelSprites:
   - {fileID: 2800000, guid: c4967748c3eed0b4c8530727190f5949, type: 3}
   - {fileID: 2800000, guid: 10815147fcb05a14b98ad956dd5303ea, type: 3}
+  - {fileID: 2800000, guid: 351be1580a18a6948b5bfce4b43fc4c7, type: 3}
   - {fileID: 2800000, guid: 98581bda72239a540a5dcfa5209f2e90, type: 3}
   - {fileID: 2800000, guid: 36249f127166dfe4e857a67ba39c0265, type: 3}
   - {fileID: 2800000, guid: 1f4807a5c3b205b4dbc5d8ce46bcdcea, type: 3}
-  - {fileID: 2800000, guid: 351be1580a18a6948b5bfce4b43fc4c7, type: 3}
   levelImagePrefab: {fileID: 6790049859489720399, guid: 9401620f99304a44589be298a10e28d3, type: 3}
 --- !u!1 &519420028
 GameObject:
