@@ -39,6 +39,7 @@
         "**/*.flare": true,
         "**/*.mat": true,
         "**/*.meta": true,
+        "**/*.csproj": true,
         "**/*.prefab": true,
         "**/*.unity": true,
         "build/": true,
