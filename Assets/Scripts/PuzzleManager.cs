@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class PuzzleManager : MonoBehaviour
 {
@@ -15,9 +16,17 @@ public class PuzzleManager : MonoBehaviour
     private Texture2D currTexture;
     private float width;
     private float height;
+    private Transform draggingPiece;
+    private Vector3 offSet;
+
+    private int correctPieceCount = 0;
 
 
-    private void Awake() => currTexture = DI.di.cuurentPuzzleTexture;
+    private void Awake()
+    {
+        EventsModel.ON_PUZZLE_RETRY += OnPuzzleRetry;
+        currTexture = DI.di.cuurentPuzzleTexture;
+    }
 
     private void Start() => StartCoroutine(GenratePuzzle());
     private IEnumerator GenratePuzzle()
@@ -25,10 +34,10 @@ public class PuzzleManager : MonoBehaviour
         yield return null;
         dimentions = GetDimentions(currTexture, difficulty);
         GneratePieces();
-        yield return new WaitForSeconds(1);
-        ScatterPieces();
         yield return new WaitForEndOfFrame();
         UpdateBorder();
+        yield return new WaitForSeconds(2.5f);
+        ScatterPieces();
     }
 
     private void UpdateBorder()
@@ -69,7 +78,10 @@ public class PuzzleManager : MonoBehaviour
             float x = Random.Range(-orthoWidth, orthoWidth);
             float y = Random.Range(-orthoHeight, orthoHeight);
             piece.position = puzzleParent.position + new Vector3(x, y, -1);
+            piece.GetComponent<BoxCollider2D>().enabled = true;
         }
+
+        EventsModel.ON_PUZZLE_BEGIN?.Invoke();
     }
 
     private void GneratePieces()
@@ -88,7 +100,7 @@ public class PuzzleManager : MonoBehaviour
                 (-height * dimentions.y / 2) + (height * i) + (height / 2),
                 -1);
                 piece.localScale = new Vector3(width, height, 1f);
-                piece.name = $"Piece {(i * dimentions.x) + j}";
+                piece.name = $"Piece ({i},{j})";
                 pieces.Add(piece);
 
                 // Assign the correct part of the texture for this jigsaw piece
@@ -126,5 +138,74 @@ public class PuzzleManager : MonoBehaviour
         }
 
         return dimentions;
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            if (hit)
+            {
+                draggingPiece = hit.transform;
+                offSet = draggingPiece.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                offSet += Vector3.back;
+            }
+        }
+
+        // When finger is realease stop dragging the piece
+        if (draggingPiece && Input.GetMouseButtonUp(0))
+        {
+            SnapAndDisableIfCorretPosition();
+            draggingPiece.position += Vector3.forward;
+            draggingPiece = null;
+        }
+        // set position object to touch position
+        if (draggingPiece)
+        {
+            Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            newPos += offSet;
+            draggingPiece.position = newPos;
+        }
+    }
+
+    private void SnapAndDisableIfCorretPosition()
+    {
+        int idx = pieces.IndexOf(draggingPiece);
+
+        // The coordinates of the piece in the puzzle.
+        int col = idx % dimentions.x;
+        int row = idx / dimentions.x;
+
+        // The target position in the non-scaled coordinates.
+        Vector2 targetPosition = new((-width * dimentions.x / 2) + (width * col) + (width / 2),
+                                     (-height * dimentions.y / 2) + (height * row) + (height / 2));
+
+        // Check if we're in the correct location.
+        if (Vector2.Distance(draggingPiece.localPosition, targetPosition) < (width / 2))
+        {
+            //snap to target position
+            draggingPiece.localPosition = targetPosition;
+
+            // Disable collidert to disable Input
+            draggingPiece.GetComponent<BoxCollider2D>().enabled = false;
+
+            ++correctPieceCount;
+            if (correctPieceCount == pieces.Count)
+            {
+                Debug.Log("Puzzle solved!");
+                EventsModel.ON_PUZZLE_COMPLETE?.Invoke();
+            }
+        }
+    }
+
+    private void OnPuzzleRetry()
+    {
+        SceneManager.LoadScene("GamePlay");
+    }
+
+    private void OnDestroy()
+    {
+        EventsModel.ON_PUZZLE_RETRY -= OnPuzzleRetry;
     }
 }
