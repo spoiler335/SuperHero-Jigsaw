@@ -6,11 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class PuzzleManager : MonoBehaviour
 {
-    [Range(2, 6)]
-    [SerializeField] private int difficulty = 4;
     [SerializeField] private Transform puzzleParent;
     [SerializeField] private Transform piecePrefab;
 
+    private int difficulty => DI.di.diffculty;
     private List<Transform> pieces = new List<Transform>();
     private Vector2Int dimentions;
     private Texture2D currTexture;
@@ -36,7 +35,7 @@ public class PuzzleManager : MonoBehaviour
         GneratePieces();
         yield return new WaitForEndOfFrame();
         UpdateBorder();
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1f);
         ScatterPieces();
     }
 
