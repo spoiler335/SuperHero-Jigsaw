@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class PuzzleManager : MonoBehaviour
 {
@@ -21,16 +22,59 @@ public class PuzzleManager : MonoBehaviour
     private void Start() => StartCoroutine(GenratePuzzle());
     private IEnumerator GenratePuzzle()
     {
-        Debug.Log($"Test-1");
         yield return null;
         dimentions = GetDimentions(currTexture, difficulty);
-        // yield return new WaitUntil(() => (dimentions.x > 0 && dimentions.y > 0));
+        GneratePieces();
+        yield return new WaitForSeconds(1);
+        ScatterPieces();
+        yield return new WaitForEndOfFrame();
+        UpdateBorder();
+    }
 
-        Debug.Log($"Test-3");
+    private void UpdateBorder()
+    {
+        LineRenderer lr = puzzleParent.GetComponent<LineRenderer>();
+        Assert.IsNotNull(lr, "Please provide a line renderer");
 
+        float halfWidth = (width * dimentions.x) / 2f;
+        float halfHeight = (height * dimentions.y) / 2f;
+
+        lr.positionCount = 4;
+        lr.SetPosition(0, new Vector3(-halfWidth, halfHeight, 0));
+        lr.SetPosition(1, new Vector3(halfWidth, halfHeight, 0));
+        lr.SetPosition(2, new Vector3(halfWidth, -halfHeight, 0));
+        lr.SetPosition(3, new Vector3(-halfWidth, -halfHeight, 0));
+
+        lr.startWidth = 0.1f;
+        lr.endWidth = 0.1f;
+
+        lr.enabled = true;
+    }
+
+    private void ScatterPieces()
+    {
+        float orthoHeight = Camera.main.orthographicSize;
+        float scrrenAspect = (float)Screen.width / Screen.height;
+        float orthoWidth = orthoHeight * scrrenAspect;
+
+        // To ensure pieces are not near edjes
+        float pWidth = width * puzzleParent.localScale.x;
+        float pHeight = height * puzzleParent.localScale.y;
+
+        orthoHeight -= pHeight;
+        orthoWidth -= pWidth;
+
+        foreach (var piece in pieces)
+        {
+            float x = Random.Range(-orthoWidth, orthoWidth);
+            float y = Random.Range(-orthoHeight, orthoHeight);
+            piece.position = puzzleParent.position + new Vector3(x, y, -1);
+        }
+    }
+
+    private void GneratePieces()
+    {
         float aspect = (float)currTexture.width / currTexture.height;
-
-        Debug.Log($"Test-4");
         height = 1f / dimentions.y;
         width = aspect / dimentions.x;
 
@@ -40,9 +84,9 @@ public class PuzzleManager : MonoBehaviour
             {
                 Transform piece = Instantiate(piecePrefab, puzzleParent);
                 piece.localPosition = new Vector3(
-          (-width * dimentions.x / 2) + (width * j) + (width / 2),
-          (-height * dimentions.y / 2) + (height * i) + (height / 2),
-          -1);
+                (-width * dimentions.x / 2) + (width * j) + (width / 2),
+                (-height * dimentions.y / 2) + (height * i) + (height / 2),
+                -1);
                 piece.localScale = new Vector3(width, height, 1f);
                 piece.name = $"Piece {(i * dimentions.x) + j}";
                 pieces.Add(piece);
@@ -64,56 +108,10 @@ public class PuzzleManager : MonoBehaviour
                 piece.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", currTexture);
             }
         }
-        // CreateJigsawPieces(currTexture);
-
-        Debug.Log($"Test-5");
-    }
-
-    void CreateJigsawPieces(Texture2D jigsawTexture)
-    {
-        // Calculate piece sizes based on the dimentions.
-        height = 1f / dimentions.y;
-        float aspect = (float)jigsawTexture.width / jigsawTexture.height;
-        width = aspect / dimentions.x;
-
-        for (int row = 0; row < dimentions.y; row++)
-        {
-            for (int col = 0; col < dimentions.x; col++)
-            {
-                // Create the piece in the right location of the right size.
-                Transform piece = Instantiate(piecePrefab, piecePrefab);
-                piece.localPosition = new Vector3(
-                  (-width * dimentions.x / 2) + (width * col) + (width / 2),
-                  (-height * dimentions.y / 2) + (height * row) + (height / 2),
-                  -1);
-                piece.localScale = new Vector3(width, height, 1f);
-
-                // // We don't have to name them, but always useful for debugging.
-                piece.name = $"Piece {(row * dimentions.x) + col}";
-                pieces.Add(piece);
-
-                // // Assign the correct part of the texture for this jigsaw piece
-                // // We need our width and height both to be normalised between 0 and 1 for the UV.
-                // float width1 = 1f / dimentions.x;
-                // float height1 = 1f / dimentions.y;
-                // // UV coord order is anti-clockwise: (0, 0), (1, 0), (0, 1), (1, 1)
-                // Vector2[] uv = new Vector2[4];
-                // uv[0] = new Vector2(width1 * col, height1 * row);
-                // uv[1] = new Vector2(width1 * (col + 1), height1 * row);
-                // uv[2] = new Vector2(width1 * col, height1 * (row + 1));
-                // uv[3] = new Vector2(width1 * (col + 1), height1 * (row + 1));
-                // // Assign our new UVs to the mesh.
-                // Mesh mesh = piece.GetComponent<MeshFilter>().mesh;
-                // mesh.uv = uv;
-                // // Update the texture on the piece
-                // piece.GetComponent<MeshRenderer>().material.SetTexture("_MainTex", jigsawTexture);
-            }
-        }
     }
 
     private Vector2Int GetDimentions(Texture2D texture, int diff)
     {
-        Debug.Log($"Test-2");
         Vector2Int dimentions = Vector2Int.zero;
 
         if (texture.width > texture.height)
