@@ -388,10 +388,10 @@ RectTransform:
   - {fileID: 822600379}
   m_Father: {fileID: 449490543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -354, y: -1134}
-  m_SizeDelta: {x: 613.81, y: 127.7269}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -354, y: 125}
+  m_SizeDelta: {x: 613.81, y: 127.72693}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &673559282
 MonoBehaviour:
@@ -642,9 +642,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 449490543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1124}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -135}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &980858082
@@ -787,7 +787,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfbc49e2c1d261f4da2d7e76ba06fd12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  difficulty: 2
   puzzleParent: {fileID: 1888744216}
   piecePrefab: {fileID: 2409919491449791570, guid: c98a6e1beafcbc944a7f48d33200f415, type: 3}
 --- !u!4 &1319412275
@@ -839,10 +838,10 @@ RectTransform:
   - {fileID: 1719957842}
   m_Father: {fileID: 449490543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 306.91, y: -1134}
-  m_SizeDelta: {x: 613.81, y: 127.7269}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 306.91, y: 125}
+  m_SizeDelta: {x: 613.81, y: 127.72693}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1441362750
 MonoBehaviour:
