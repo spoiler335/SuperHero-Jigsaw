@@ -14,7 +14,6 @@ public class GamePlayUIManager : MonoBehaviour
     private void Awake()
     {
         headertext.gameObject.SetActive(false);
-        quitButton.gameObject.SetActive(false);
         SubscribeEvents();
     }
 
@@ -50,7 +49,6 @@ public class GamePlayUIManager : MonoBehaviour
     {
         headertext.text = "PUZZLE COMPLETED";
         headertext.gameObject.SetActive(true);
-        quitButton.gameObject.SetActive(true);
     }
 
     private void OnRetyClicked()
